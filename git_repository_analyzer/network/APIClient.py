@@ -9,11 +9,12 @@ class APIClient:
     __github_api_base_url = 'https://api.github.com/'
     __gitlab_api_base_url = 'https://gitlab.com/api/v4/'
 
-    # Returns data about any public GitHub repository with given id in JSON format
+    # Returns data about any public GitHub repository with owner and repo name in JSON format
     @classmethod
-    def get_github_project(cls, id):
-        url = f'{cls.__github_api_base_url}projects/{id}'
-        response = requests.get(url)
+    def get_github_project(cls, owner, repo_name):
+        url = f'{cls.__github_api_base_url}repos/{owner}/{repo_name}'
+        headers = {'Accept': 'application/vnd.github.v3+json'}
+        response = requests.get(url, headers=headers)
         return response.json()
     
     # Returns data about any public GitLab repository with given id in JSON format
