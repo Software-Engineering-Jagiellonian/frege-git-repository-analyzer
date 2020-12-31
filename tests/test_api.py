@@ -1,4 +1,3 @@
-from os import close
 import unittest
 from git_repository_analyzer.network.api import API, PR_Type
 
@@ -27,3 +26,4 @@ class TestAPI(unittest.TestCase):
         result = API.get_gitlab_project('278964')
         self.assertEqual(result['id'], 278964)
         self.assertIn('GitLab', result['description'])
+

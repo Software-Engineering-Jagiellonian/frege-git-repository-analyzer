@@ -1,4 +1,4 @@
-import sys; import pprint
+import sys
 from pathlib import Path
 root_path = Path(__file__).parent.parent.parent
 sys.path.insert(0, f'{root_path}')
@@ -18,4 +18,3 @@ def extract(owner, repo_name):
     pr_closed = API.get_github_pr_count(owner, repo_name, PR_Type.Closed)
 
     # TODO: Save to database
-    
