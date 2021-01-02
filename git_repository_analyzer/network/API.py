@@ -1,7 +1,12 @@
 # TODO: bootstrap script to install dependencies
 import requests
+from enum import Enum
 
-# To fetch repository data call API.{method_name(id)} 
+class PR_Type(Enum):
+    Open = 'open'
+    Closed = 'closed'
+
+# To fetch repository data call API.{method_name(...)} 
 # eg. API.get_gitlab_project(6853087)
 
 class API:
@@ -28,14 +33,32 @@ class API:
     # Returns data about any public GitHub repository with owner and repo name in JSON format
     @classmethod
     def get_github_project(cls, owner, repo_name):
-        url = f'{cls.__github_api_base_url}repos/{owner}/{repo_name}'
+        path = f'{cls.__github_api_base_url}repos/{owner}/{repo_name}'
         headers = {'Accept': 'application/vnd.github.v3+json'}
-        response = cls.__get__(url, headers)
+        response = cls.__get__(path, headers)
         return response.json()
+
+    # Returns number of closed issues for given GitHub repository
+    @classmethod
+    def get_github_closed_issues(cls, owner, repo_name):
+        path = f'{cls.__github_api_base_url}search/issues?q=repo:{owner}/{repo_name}+type:issue+state:closed'
+        response = cls.__get__(path, {})
+        return response.json()['total_count']
+
+    # Returns number of open/closed pull requests from given GitHub repository
+    # Takes PR_Type as a state parameter
+    @classmethod
+    def get_github_pr_count(cls, owner, repo_name, state):
+        if  not isinstance(state, PR_Type):
+            raise TypeError("state attribute must be set to an instance of PR_Type")
+
+        path = f'{cls.__github_api_base_url}search/issues?q=repo:{owner}/{repo_name}+type:pr+state:{state.value}'
+        response = cls.__get__(path, {})
+        return response.json()['total_count']
     
     # Returns data about any public GitLab repository with given id in JSON format
     @classmethod
     def get_gitlab_project(cls, id):
-        url = f'{cls.__gitlab_api_base_url}projects/{id}'
-        response = cls.__get__(url, {})
+        path = f'{cls.__gitlab_api_base_url}projects/{id}'
+        response = cls.__get__(path, {})
         return response.json()
