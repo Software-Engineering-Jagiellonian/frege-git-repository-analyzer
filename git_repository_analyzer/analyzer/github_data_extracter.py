@@ -18,3 +18,17 @@ def extract(owner, repo_name):
     pr_closed = API.get_github_pr_count(owner, repo_name, PR_Type.Closed)
 
     # TODO: Save to database
+
+def extract_user_name_from_url(url: str):
+    splitted_url = url.split('/')
+    if splitted_url.count < 4:
+        # TODO: Raise error
+        print('Invalid project url')
+    return splitted_url[3]
+
+def extract_project_name_from_url(url: str):
+    splitted_url = url.split('/')
+    if splitted_url.count < 4:
+        # TODO: Raise error
+        print('Invalid project url')
+    return splitted_url[4]
