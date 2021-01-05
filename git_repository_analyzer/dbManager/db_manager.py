@@ -5,7 +5,7 @@ from git_repository_analyzer.config import config
 # todo import logger
 
 def connect():
-    params = config.config("credentials.ini")
+    params = config.config('postgresql')
     engine = psycopg2.connect(**params)
     return engine
 

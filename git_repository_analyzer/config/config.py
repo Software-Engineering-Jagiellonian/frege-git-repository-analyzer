@@ -1,7 +1,6 @@
+import os
 from configparser import ConfigParser
 from pathlib import Path
-
-import os
 
 
 def get_project_root() -> Path:
@@ -9,9 +8,8 @@ def get_project_root() -> Path:
     return Path(__file__).parents[1]
 
 
-def config(config_db):
-    section = 'postgresql'
-    config_file_path = 'config/' + config_db
+def config(section):
+    config_file_path = 'config/credentials.ini'
     if len(config_file_path) > 0 and len(section) > 0:
         # Create an instance of ConfigParser clas
         config_parser = ConfigParser()
@@ -23,13 +21,21 @@ def config(config_db):
             config_params = config_parser.items(section)
             # Convert the list object to a python dictionary object
             # Define an empty dictionary
-            db_conn_dict = {}
+            conn_dict = {}
             # Loop in the list
             for config_param in config_params:
                 # Get options key and value
                 key = config_param[0]
                 value = os.environ.get(config_param[1]) if config_param[1] in os.environ else config_param[1]
+
+                # todo uncomment when app will be working correctly
+                # try:
+                #     value = os.environ[config_param[1]]
+                # except KeyError:
+                #     print(section.upper(), key, "must be provided as,", config_param[1], "environment var!")
+                #     sys.exit(1)
+
                 # Add the key value pair in the dictionary object
-                db_conn_dict[key] = value
+                conn_dict[key] = value
             # Get connection object use above dictionary object
-            return db_conn_dict
+            return conn_dict
