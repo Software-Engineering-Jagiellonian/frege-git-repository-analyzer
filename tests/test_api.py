@@ -1,5 +1,5 @@
 import unittest
-from git_repository_analyzer.network.api import API, PR_Type
+from git_repository_analyzer.network.API import API, PR_Type
 
 class TestAPI(unittest.TestCase):
 

@@ -1,7 +1,7 @@
 import unittest
-from git_repository_analyzer.analyzer.github_data_extracter import extract_project_name_from_url, extract_user_name_from_url
+from git_repository_analyzer.analyzer.github_data_extractor import extract_project_name_from_url, extract_user_name_from_url
 
-class TestExtracter(unittest.TestCase):
+class TestExtractor(unittest.TestCase):
 
     def test_extract_project_name(self):
         url = 'https://gitlab.com/gitlab-org/gitlab'
