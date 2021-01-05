@@ -3,7 +3,7 @@ import json
 import pika
 import time
 
-from git_repository_analyzer.analyzer.github_data_extracter import extract
+from git_repository_analyzer.analyzer.github_data_extractor import extract
 from git_repository_analyzer.dbManager.db_manager import DbManager
 from git_repository_analyzer.config import config
 
