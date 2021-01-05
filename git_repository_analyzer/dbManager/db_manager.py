@@ -1,11 +1,10 @@
 import psycopg2
+
 from git_repository_analyzer.config import config
 
 
-# todo import logger
-
 def connect():
-    params = config.config("credentials.ini")
+    params = config.config('postgresql')
     engine = psycopg2.connect(**params)
     return engine
 
@@ -36,18 +35,25 @@ class DbManager:
     def save_repository_statistics(self, entry):
         cnn = self.connection
         cur = cnn.cursor()
-        query = "INSERT INTO repository_statistics VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
-        cur.execute(query, (entry['forks'], entry['watchers'], entry['updated_at'], entry['created_at'], entry['open_issues'], entry['subscribers_count'], entry['closed_issues'], entry['pr_open'], entry['pr_closed']))
+        query = "INSERT INTO repository_statistics VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+        cur.execute(query, (entry['repo_id'], entry['forks'], entry['watchers'], entry['updated_at'], entry['created_at'], entry['open_issues'], entry['closed_issues'], entry['subscribers_count'], entry['pr_open'], entry['pr_closed']))
 
     @db_persist
     def select_repository_by_id(self, id):
         cnn = self.connection
         cur = cnn.cursor()
-        query = "SELECT * FROM repositories WHERE repo_id=%s;"
-        cur.execute(query, id)
+        query = "SELECT * FROM repositories WHERE repo_id='%s';"
+        cur.execute(query % (id))
         repository = cur.fetchone()
         if repository:
-            return repository
+            entry = dict()
+            entry['repo_id'] = repository[0]
+            entry['git_url'] = repository[1]
+            entry['repo_url'] = repository[2]
+            entry['crawl_time'] = repository[3]
+            entry['download_time'] = repository[4]
+            entry['commit_hash'] = repository[5]
+            return entry
 
 # create table repository_statistics
 # (

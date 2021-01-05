@@ -5,30 +5,39 @@ import time
 
 from git_repository_analyzer.analyzer.github_data_extractor import extract
 from git_repository_analyzer.dbManager.db_manager import DbManager
+from git_repository_analyzer.config import config
 
 dbM = DbManager()
 
 
+def urlparse(url):
+    values = url.split('/')
+    result = dict()
+    result['owner'] = values[values.__len__()-2]
+    result['repo_name'] = values[values.__len__()-1]
+    return result
+
+
 def callback(ch, method, properties, body):
-    #przeniesc to stad?
+    # todo przeniesc to stad?
     time.sleep(body.count(b'.'))
     print(json.loads(body))
     repository = dbM.select_repository_by_id(json.loads(body)['repo_id'])
-    print(repository)
-    # extract('facebook', 'react')
+    values = urlparse(repository['repo_url'])
+    extract(repository['repo_id'], values['owner'], values['repo_name'])
 
 
 class RabbitMQ:
 
-    @staticmethod
-    def connect(rabbitmq_host, rabbitmq_port, queue_name):
+    def connect(self):
+        self.params = config.config('rabbitMQ')
         while True:
             try:
-                print(f'Connecting to RabbitMQ ({rabbitmq_host}:{rabbitmq_port})')
-                connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbitmq_host, port=rabbitmq_port))
+                print('Connecting to RabbitMQ', self.params['host'], ":", self.params['port'])
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.params['host'], port=self.params['port']))
                 channel = connection.channel()
                 channel.confirm_delivery()
-                channel.queue_declare(queue=queue_name, durable=True)
+                channel.queue_declare(queue=self.params['queue'], durable=True)
 
                 print('Connected')
                 return channel
@@ -44,11 +53,10 @@ class RabbitMQ:
                     pass
                 sys.exit(0)
 
-    @staticmethod
-    def consume(channel, queue_name):
+    def consume(self, channel):
         while True:
             try:
-                channel.basic_consume(on_message_callback=callback, queue=queue_name)
+                channel.basic_consume(on_message_callback=callback, queue=self.params['queue'])
                 channel.start_consuming()
                 print("Message was consumed from RabbitMQ")
                 break
