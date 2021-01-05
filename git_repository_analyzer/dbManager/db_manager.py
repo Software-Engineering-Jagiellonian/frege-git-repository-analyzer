@@ -1,8 +1,7 @@
 import psycopg2
+
 from git_repository_analyzer.config import config
 
-
-# todo import logger
 
 def connect():
     params = config.config('postgresql')
@@ -37,14 +36,14 @@ class DbManager:
         cnn = self.connection
         cur = cnn.cursor()
         query = "INSERT INTO repository_statistics VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-        cur.execute(query, (entry['repo_id'], entry['forks'], entry['watchers'], entry['updated_at'], entry['created_at'], entry['open_issues'], entry['subscribers_count'], entry['closed_issues'], entry['pr_open'], entry['pr_closed']))
+        cur.execute(query, (entry['repo_id'], entry['forks'], entry['watchers'], entry['updated_at'], entry['created_at'], entry['open_issues'], entry['closed_issues'], entry['subscribers_count'], entry['pr_open'], entry['pr_closed']))
 
     @db_persist
     def select_repository_by_id(self, id):
         cnn = self.connection
         cur = cnn.cursor()
         query = "SELECT * FROM repositories WHERE repo_id='%s';"
-        cur.execute(query%(id))
+        cur.execute(query % (id))
         repository = cur.fetchone()
         if repository:
             entry = dict()

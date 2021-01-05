@@ -10,14 +10,22 @@ from git_repository_analyzer.config import config
 dbM = DbManager()
 
 
+def urlparse(url):
+    values = url.split('/')
+    result = dict()
+    result['owner'] = values[values.__len__()-2]
+    result['repo_name'] = values[values.__len__()-1]
+    return result
+
+
 def callback(ch, method, properties, body):
     # todo przeniesc to stad?
     time.sleep(body.count(b'.'))
     print(json.loads(body))
     repository = dbM.select_repository_by_id(json.loads(body)['repo_id'])
-    # todo tu ma byc parser
-    values = repository['repo_url'].split('/')
-    extract(repository['repo_id'], values[0], values[1])
+    values = urlparse(repository['repo_url'])
+    extract(repository['repo_id'], values['owner'], values['repo_name'])
+
 
 class RabbitMQ:
 
