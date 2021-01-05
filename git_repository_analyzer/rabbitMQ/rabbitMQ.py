@@ -10,12 +10,13 @@ dbM = DbManager()
 
 
 def callback(ch, method, properties, body):
-    #przeniesc to stad?
+    # przeniesc to stad?
     time.sleep(body.count(b'.'))
     print(json.loads(body))
     repository = dbM.select_repository_by_id(json.loads(body)['repo_id'])
-    print(repository)
-    # extract('facebook', 'react')
+    # todo tu ma byc parser
+    values = repository['repo_url'].split('/')
+    extract(repository['repo_id'], values[0], values[1])
 
 
 class RabbitMQ:
