@@ -1,65 +1,46 @@
+import logging
 import sys
-import json
 import pika
 import time
 
-from git_repository_analyzer.analyzer.github_data_extractor import extract
-from git_repository_analyzer.dbManager.db_manager import DbManager
 from git_repository_analyzer.config import config
-
-dbM = DbManager()
-
-
-def urlparse(url):
-    values = url.split('/')
-    result = dict()
-    result['owner'] = values[values.__len__()-2]
-    result['repo_name'] = values[values.__len__()-1]
-    return result
-
-
-def callback(ch, method, properties, body):
-    # todo przeniesc to stad?
-    time.sleep(body.count(b'.'))
-    print(json.loads(body))
-    repository = dbM.select_repository_by_id(json.loads(body)['repo_id'])
-    values = urlparse(repository['repo_url'])
-    extract(repository['repo_id'], values['owner'], values['repo_name'])
 
 
 class RabbitMQ:
 
     def connect(self):
+        logging.info('Connecting to the rabbitMQ instance...')
         self.params = config.config('rabbitMQ')
         while True:
             try:
-                print('Connecting to RabbitMQ', self.params['host'], ":", self.params['port'])
+                logging.info(f"Connecting to RabbitMQ {self.params['host']}: {self.params['port']}")
+                # logging.info('Connecting to RabbitMQ', self.params['host'], ":", self.params['port'])
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.params['host'], port=self.params['port']))
                 channel = connection.channel()
                 channel.confirm_delivery()
                 channel.queue_declare(queue=self.params['queue'], durable=True)
 
-                print('Connected')
+                logging.info('Connected')
                 return channel
             except pika.exceptions.AMQPConnectionError as exception:
-                print(f'AMQP Connection Error: {exception}')
-                print('Sleeping for 10 seconds and retrying')
+                logging.error(f'AMQP Connection Error: {exception}')
+                logging.info('Sleeping for 10 seconds and retrying')
                 time.sleep(10)
             except KeyboardInterrupt:
-                print('Exiting')
+                logging.info('Exiting...')
                 try:
                     connection.close()
                 except NameError:
                     pass
                 sys.exit(0)
 
-    def consume(self, channel):
+    def consume(self, channel, callback):
         while True:
             try:
                 channel.basic_consume(on_message_callback=callback, queue=self.params['queue'])
                 channel.start_consuming()
-                print("Message was consumed from RabbitMQ")
+                logging.info("Message was consumed from RabbitMQ")
                 break
             except pika.exceptions.NackError:
-                print("That was problem with consume message from RabbitMQ, sleeping for 10 seconds")
+                logging.error("That was problem with consume message from RabbitMQ, sleeping for 10 seconds")
                 time.sleep(10)

@@ -1,4 +1,3 @@
-# TODO: bootstrap script to install dependencies
 import requests
 from enum import Enum
 
