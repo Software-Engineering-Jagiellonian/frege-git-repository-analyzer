@@ -9,8 +9,8 @@ from git_repository_analyzer.network.api import API, PR_Type
 # Returns dictionary of parameters rady to save to database
 def extract_github_data(repo_id, owner, repo_name):
     repository_data = API.get_github_project(owner, repo_name)
+    
     entry = dict()
-
     entry['repo_id'] = repo_id
     entry['forks'] = repository_data['forks']
     entry['watchers'] = repository_data['watchers_count']
