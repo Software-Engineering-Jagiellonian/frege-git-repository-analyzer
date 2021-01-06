@@ -1,3 +1,4 @@
+import logging
 import psycopg2
 
 from git_repository_analyzer.config import config
@@ -14,18 +15,18 @@ class DbManager:
         def persist(self, *args):
             try:
                 self.connection = connect()
-                print("success calling db func: " + func.__name__)
+                logging.info("Success calling db func: " + func.__name__)
                 rv = func(self, *args)
             except (Exception, psycopg2.DatabaseError) as error:
-                print("Error in transction Reverting all other operations of a transction ", error)
+                logging.error("Error in transction Reverting all other operations of a transction ", error)
                 self.connection.rollback()
                 raise
             else:
                 self.connection.commit()
-                print("Transaction completed successfully")
+                logging.info("Transaction completed successfully")
             finally:
                 if self.connection is not None:
-                    print("PostgreSQL connection is closed")
+                    logging.info("PostgreSQL connection is closed")
                     self.connection.close()
             return rv
 
@@ -57,6 +58,7 @@ class DbManager:
 
 # create table repository_statistics
 # (
+#     repo_id           varchar,
 #     forks             varchar,
 #     watchers          varchar,
 #     updated_at        varchar,
@@ -67,6 +69,6 @@ class DbManager:
 #     pr_closed         varchar,
 #     pr_open           integer
 # );
-#
+
 # alter table repository_statistics
 #     owner to postgres;
