@@ -14,7 +14,6 @@ class RabbitMQ:
         while True:
             try:
                 logging.info(f"Connecting to RabbitMQ {self.params['host']}: {self.params['port']}")
-                # logging.info('Connecting to RabbitMQ', self.params['host'], ":", self.params['port'])
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.params['host'], port=self.params['port']))
                 channel = connection.channel()
                 channel.confirm_delivery()
