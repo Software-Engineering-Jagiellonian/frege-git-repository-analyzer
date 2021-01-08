@@ -1,9 +1,10 @@
 import requests
 from enum import Enum
 
-class PR_Type(Enum):
+class StateType(Enum):
     Open = 'open'
     Closed = 'closed'
+    Opened = 'opened'
 
 # To fetch repository data call API.{method_name(...)} 
 # eg. API.get_gitlab_project(6853087)
@@ -45,11 +46,11 @@ class API:
         return response.json()['total_count']
 
     # Returns number of open/closed pull requests from given GitHub repository
-    # Takes PR_Type as a state parameter
+    # Takes StateType as a state parameter
     @classmethod
-    def get_github_pr_count(cls, owner, repo_name, state):
-        if  not isinstance(state, PR_Type):
-            raise TypeError("state attribute must be set to an instance of PR_Type")
+    def get_github_pr_count(cls, owner, repo_name, state: StateType):
+        if  not isinstance(state, StateType):
+            raise TypeError("state attribute must be set to an instance of StateType")
 
         path = f'{cls.__github_api_base_url}search/issues?q=repo:{owner}/{repo_name}+type:pr+state:{state.value}'
         response = cls.__get__(path, {})
@@ -61,3 +62,18 @@ class API:
         path = f'{cls.__gitlab_api_base_url}projects/{id}'
         response = cls.__get__(path, {})
         return response.json()
+
+    # Returns issues count 
+    @classmethod
+    def get_gitlab_issues_statistics(cls, id):
+        path = f'{cls.__gitlab_api_base_url}projects/{id}/issues_statistics'
+        response = cls.__get__(path, {})
+        return response.json()['statistics']['counts']
+
+    # Returns number of merge requests (opened / closed)
+    # Important: StateType should be either .Opened or .Closed, NOT .Open
+    @classmethod
+    def get_gitlab_mr_statistics(cls, id, state: StateType):
+        path = f'{cls.__gitlab_api_base_url}projects/{id}/merge_requests?state={state.value}'
+        response = cls.__get__(path, {})
+        return response.headers['X-Total']
