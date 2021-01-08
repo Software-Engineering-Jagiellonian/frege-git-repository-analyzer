@@ -8,7 +8,7 @@ from pathlib import Path
 root_path = Path(__file__).parent.parent
 sys.path.insert(0, f'{root_path}')
 
-from git_repository_analyzer.analyzer.github_data_extractor import extract_github_data, extract_gitlab_data
+from git_repository_analyzer.analyzer.repo_data_extractor import extract_github_data, extract_gitlab_data
 from git_repository_analyzer.db.db_manager import DbManager
 from git_repository_analyzer.rabbitMQ import rabbitMQ
 
