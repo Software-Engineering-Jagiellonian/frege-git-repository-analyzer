@@ -46,6 +46,7 @@ def callback(ch, method, properties, body):
         # TODO: raise error
         logging.error(f'Invalid repository ID: {repo_primary_key}')
 
+
 def parse_url(url: str):
     values = url.split('/')
     
@@ -58,6 +59,7 @@ def parse_url(url: str):
     result['owner'] = values[values.__len__()-2]
     result['repo_name'] = values[values.__len__()-1]
     return result
+
 
 if __name__ == '__main__':
     setup_logger()
