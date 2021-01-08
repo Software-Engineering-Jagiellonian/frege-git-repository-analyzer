@@ -7,11 +7,11 @@ sys.path.insert(0, f'{root_path}')
 from git_repository_analyzer.network.api import API, StateType
 
 # Returns dictionary of parameters rady to save to database
-def extract_github_data(repo_id, owner, repo_name):
+def extract_github_data(repo_primary_key, owner, repo_name):
     repository_data = API.get_github_project(owner, repo_name)
     
     entry = dict()
-    entry['repo_id'] = repo_id
+    entry['repo_id'] = repo_primary_key
     entry['forks'] = repository_data['forks']
     entry['watchers'] = repository_data['watchers_count']
     entry['updated_at'] = repository_data['updated_at']
@@ -25,11 +25,11 @@ def extract_github_data(repo_id, owner, repo_name):
     return entry
 
 def extract_gitlab_data(repo_id):
-    repository_data = API.get_gitlab_project(repo_id)
+    repository_data = API.get_gitlab_project(repo_id.split('-')[0])
     issues_statistics = API.get_gitlab_issues_statistics(repo_id)
 
     entry = dict()
-    entry['repo_id'] = repo_id
+    entry['repo_id'] = f'gitlab-{repo_id}'
     entry['forks'] = repository_data['forks_count']
     entry['watchers'] = repository_data['star_count']
     entry['updated_at'] = repository_data['last_activity_at']

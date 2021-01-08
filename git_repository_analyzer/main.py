@@ -1,6 +1,7 @@
 import logging
 import time 
 import json
+import pika
 
 import sys
 from pathlib import Path
@@ -28,20 +29,22 @@ def setup_logger():
 def callback(ch, method, properties, body):
     time.sleep(body.count(b'.'))
     # print(json.loads(body))
-    repo_id = json.loads(body)['repo_id']
-    repository = dbM.select_repository_by_id(repo_id)
+    repo_primary_key = json.loads(body)['repo_id']
+    repository = dbM.select_repository_by_id(repo_primary_key)
     values = parse_url(repository['repo_url'])
-    repo_id = repo_id.split('-')[0]
+    repo_type = repo_primary_key.split('-')[0]
 
-    if str(repo_id).lower() == 'github':
-        entry = extract_github_data(repository['repo_id'], values['owner'], values['repo_name'])
+    if str(repo_type).lower() == 'github':
+        entry = extract_github_data(repo_primary_key, values['owner'], values['repo_name'])
         dbM.save_repository_statistics(entry)
-    elif str(repo_id).lower() == 'gitlab':
-        entry = extract_gitlab_data(repository['repo_id'])
+        ch.basic_ack(delivery_tag = method.delivery_tag)
+    elif str(repo_type).lower() == 'gitlab':
+        entry = extract_gitlab_data(repo_primary_key.split('-')[1])
         dbM.save_repository_statistics(entry)
+        ch.basic_ack(delivery_tag = method.delivery_tag)
     else:
         # TODO: raise error
-        logging.error(f'Invalid repository ID: {str(repo_id).lower()}')
+        logging.error(f'Invalid repository ID: {repo_primary_key}')
 
 def parse_url(url: str):
     values = url.split('/')
