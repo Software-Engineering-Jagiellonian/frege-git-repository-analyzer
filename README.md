@@ -2,10 +2,11 @@
 Repository analyzer for GitHub and GitLab
 
 The application listens for RabbitMQ messages from queue extract in the following format:
-
+```{r echo=FALSE, eval=FALSE}
 {
     "repo_id": "<repo_id>"
 }
+```
 After receiving a message, it will be try to get from GitLab and GitHub API repository_statistics and next save it in entity repository_statistics. 
 
 # Running
@@ -14,14 +15,13 @@ Run this application with the following command:
 docker run -it jagiellonian/frege-extractor <environmental variables>
   
 # Environmental variables
-Run this application with following environmental variables:
+Run this application with following environmental variables :
 
-REPOSITORIES_DIRECTORY - path to the download directory of the repositories
-RABBITMQ_HOST - RabbitMQ host
-RABBITMQ_QUEUE - RabbitMQ queue
-RABBITMQ_PORT - RabbitMQ port
-DB_HOST - Postgres server host
-DB_PORT - Postgres server port
-DB_DATABASE - database name
-DB_USERNAME - database user name
-DB_PASSWORD - database user password
+* RABBITMQ_HOST - RabbitMQ host
+* RABBITMQ_QUEUE - RabbitMQ queue
+* RABBITMQ_PORT - RabbitMQ port
+* DB_HOST - Postgres server host
+* DB_PORT - Postgres server port
+* DB_DATABASE - database name
+* DB_USERNAME - database user name
+* DB_PASSWORD - database user password
