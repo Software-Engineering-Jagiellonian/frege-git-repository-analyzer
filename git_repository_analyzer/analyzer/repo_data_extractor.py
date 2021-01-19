@@ -34,7 +34,7 @@ def extract_gitlab_data(repo_id):
     entry['watchers'] = repository_data['star_count']
     entry['updated_at'] = repository_data['last_activity_at']
     entry['created_at'] = repository_data['created_at']
-    entry['subscribers_count'] = 0
+    entry['subscribers_count'] = None
     entry['open_issues'] = issues_statistics['opened']
     entry['closed_issues'] = issues_statistics['closed']
     entry['pr_open'] = API.get_gitlab_mr_statistics(repo_id, StateType.Opened)
