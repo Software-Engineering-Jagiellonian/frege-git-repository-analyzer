@@ -4,7 +4,7 @@ from pathlib import Path
 root_path = Path(__file__).parent.parent.parent
 sys.path.insert(0, f'{root_path}')
 
-from git_repository_analyzer.network.api import API, StateType
+from git_repository_analyzer.network.API import API, StateType
 
 # Returns dictionary of parameters rady to save to database
 def extract_github_data(repo_primary_key, owner, repo_name):

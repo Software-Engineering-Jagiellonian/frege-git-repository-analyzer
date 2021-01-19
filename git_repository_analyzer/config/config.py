@@ -1,4 +1,5 @@
 import os
+import sys
 from configparser import ConfigParser
 from pathlib import Path
 
@@ -26,14 +27,14 @@ def config(section):
             for config_param in config_params:
                 # Get options key and value
                 key = config_param[0]
-                value = os.environ.get(config_param[1]) if config_param[1] in os.environ else config_param[1]
+                # value = os.environ.get(config_param[1]) if config_param[1] in os.environ else config_param[1]
 
                 # todo uncomment when app will be working correctly
-                # try:
-                #     value = os.environ[config_param[1]]
-                # except KeyError:
-                #     print(section.upper(), key, "must be provided as,", config_param[1], "environment var!")
-                #     sys.exit(1)
+                try:
+                    value = os.environ[config_param[1]]
+                except KeyError:
+                    print(section.upper(), key, "must be provided as,", config_param[1], "environment var!")
+                    sys.exit(1)
 
                 # Add the key value pair in the dictionary object
                 conn_dict[key] = value
