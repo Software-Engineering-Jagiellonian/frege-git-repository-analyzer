@@ -12,7 +12,7 @@ After receiving a message, it will be try to get from GitLab and GitHub API repo
 # Running
 Run this application with the following command:
 
-docker run -it jagiellonian/frege-extractor <environmental variables>
+docker run -it jagiellonian/frege-git-repository-analyzer <environmental variables>
   
 # Environmental variables
 Run this application with following environmental variables :
@@ -25,3 +25,8 @@ Run this application with following environmental variables :
 * DB_DATABASE - database name
 * DB_USERNAME - database user name
 * DB_PASSWORD - database user password
+
+
+# End credits
+ * Nikodem Kwaśniak
+ * Piotr Opyd
